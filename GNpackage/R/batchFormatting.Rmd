@@ -1,0 +1,45 @@
+---
+title: "Batch Formatting Geonetwork"
+author: "M. Houle"
+date: "January 15, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This script intend to create metadata using Geonetwork standard when dataset have the same format, such as species distribution for individual birds species. 
+
+First, metadata needs to be created inside Geonetwork using string to replace where species name and abbreviation are used. Then, export metadata as a zip file in a work folder. Metadata xml is then process by the script to create new metadata that include species name,  abbrevation, ... and fix link to download to access respective files.  
+
+```{r pressure, echo=FALSE} 
+
+```
+
+```{r Batch upload Species Distribution dataset }  
+library(XML)
+library(utils)
+
+#List birds table 
+#birdtbl <- ("../data/birdAcronyme.csv")
+parentDir <-dirname(getwd())
+birdtbl <-file.path(parentDir,"data/birdAcronyme.csv")
+bird <- read.csv(birdtbl, sep=",", header=TRUE,stringsAsFactors=FALSE)
+
+gnDir <- file.path(parentDir,"GNmetadata/templateSpeciesDistribution/data/metadata")
+gnVersion <-readLines(file(paste0(gnDir,"/metadata.xml")), warn=FALSE)
+
+xml_update <- apply(bird,1,function(x) {
+                    dirTo <- file.path(dirname(parentDir),"toGN/metadata/SpeciesDistribution")
+                    species_updated <-gsub("XXXX",x[2],gnVersion)
+                    xsname_updated <-gsub("SSSS",x[3],species_updated)
+                    abbrev_updated <-gsub("AAAA",x[1],xsname_updated)
+                    birdfl<-file(paste0(dirTo,"/",x[1],".xml"))
+                    writeLines(abbrev_updated, birdfl)
+                    close(birdfl)
+})
+
+```

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<info version="1.1">
+  <general>
+    <createDate>2018-02-21T15:03:26</createDate>
+    <changeDate>2018-02-21T21:27:16</changeDate>
+    <schema>iso19139</schema>
+    <isTemplate>n</isTemplate>
+    <localId>122</localId>
+    <format>full</format>
+    <rating>0</rating>
+    <popularity>1</popularity>
+    <uuid>dcd2bd1a-40e5-4d1f-abd0-9a455c849624</uuid>
+    <siteId>dc097f58-6bbe-4152-a0c9-e3e0412a874c</siteId>
+    <siteName>My GeoNetwork catalogue</siteName>
+  </general>
+  <categories />
+  <privileges>
+    <group name="intranet">
+      <operation name="view" />
+      <operation name="download" />
+      <operation name="dynamic" />
+      <operation name="featured" />
+      <operation name="notify" />
+    </group>
+    <group name="all" groupOwner="true">
+      <operation name="view" />
+      <operation name="download" />
+      <operation name="dynamic" />
+      <operation name="featured" />
+      <operation name="notify" />
+    </group>
+    <group name="Guest">
+      <operation name="download" />
+    </group>
+    <group name="GUEST">
+      <operation name="view" />
+      <operation name="download" />
+      <operation name="dynamic" />
+      <operation name="featured" />
+      <operation name="notify" />
+    </group>
+    <group name="BAM">
+      <operation name="view" />
+      <operation name="download" />
+      <operation name="dynamic" />
+      <operation name="featured" />
+      <operation name="notify" />
+      <operation name="editing" />
+    </group>
+  </privileges>
+  <public />
+  <private />
+</info>
+

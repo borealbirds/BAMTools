@@ -1,0 +1,42 @@
+---
+title: "Batch Download"
+author: "M. Houle"
+date: "March 7, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This script uses a list of 89 bird species to batch download maps of density estimate found on the boreal birds website. The list of birds used should be check prior to make the script final. 
+
+A list of birds needs to be used since the server do not allow any traffic on the parent directory relative_density_estimates. Template of filenames (jpgObj) was found by manually downloading one file. If some jpeg do not used the same template or a bird is not found on the list, the JPEG won't be downloaded. To make sure all JPEG are download, make sure your list of birds is up to date or change permission on the parent directory on the Web Server. 
+
+
+```{r Relative Density Maps }
+library(RCurl)
+
+#List birds table **** Note the list is incomplete. need to be review
+birdtbl <- "../data/birdAcronyme.csv"
+bird <- read.csv(birdtbl, sep="\t", header=TRUE)
+lsbird <- as.vector(bird[,1])
+
+BAMwebsite <- "http://www.borealbirds.ca/files/results/relative_density_estimates"
+jpgObj <- "XXXX_Density_April30_2012.jpg"
+outpath <- "../../toLoad/RelativeDensity"
+  
+sapply(lsbird,function(x) {
+          jpgObj_updated <- gsub("XXXX",x,jpgObj)
+          toDwd <- file.path(BAMwebsite,jpgObj_updated)
+          doExists <- url.exists(file.path(BAMwebsite,jpgObj_updated))
+          if(doExists){
+            download.file(toDwd, file.path(outpath, jpgObj_updated), method = "auto", mode = "wb")
+          }else {
+            print (x)
+          }   
+})
+```
+

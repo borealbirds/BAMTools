@@ -1,0 +1,7 @@
+library(readtext)
+install.packages("readtext")
+library(readtext)
+gnDir <- "C:/MelinaStuff/Contracts/BAM/geonetwork/fromGN/tryreload/"
+readtext(file.path(gnDir, "metadata.xml"))
+install.packages("XML")
+library(XML)
