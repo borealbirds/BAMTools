@@ -29,7 +29,7 @@ studyRegion<-readOGR(dsn=wd,layer="Homelands_Boundary_srid92001")
 incBuff<-c("0","50000","100000","150000","200000","250000","300000","350000","400000","450000","500000")
 
 lapply(incBuff, function(x) {
-                    srBuff <-gBuffer(studyRegion, width=as.numeric(x))
+                    srBuff <-gBuffer(studyRegion, width=as.numeric(x),quadsegs=35)
                     results <-intersect(BAMpts, srBuff)
                     outf <- paste0("BAM_pts_wBuff",x)
                     write.table(results$SS, file.path(wd,"output",paste0(outf,".csv")), row.names=FALSE, col.names=c("SS"))
