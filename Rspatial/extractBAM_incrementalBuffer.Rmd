@@ -16,18 +16,18 @@ require(rgdal)
 require(raster)
 
 
-# set wd where spatial data are
+# Set wd where spatial data are
 wd<-"F:/MelinaStuff/request/FranciscoDenes/MooseCree"
-# Location of Avian BAM database (here I used a sample but it could be the whole)
 
-# Read SHAPEFILE.shp from the current working dir (".")
+# Read study region and BAMpts shp from the current working dir
 BAMpts<-readOGR(dsn=wd, layer="BAM_Homelands_wBuff500")
 studyRegion<-readOGR(dsn=wd,layer="Homelands_Boundary_srid92001")
 #plot(studyRegion)
 
-# vector of incremental buffer, must follow unit of the proj4srting chosen. Here buffers are in meters
+# Vector of incremental buffer, must follow unit of the proj4srting chosen. Here buffers are in meters
 incBuff<-c("0","50000","100000","150000","200000","250000","300000","350000","400000","450000","500000")
 
+# Buffer / intersetc / save SS as list in csv file / save spatial R obj in shapefile
 lapply(incBuff, function(x) {
                     srBuff <-gBuffer(studyRegion, width=as.numeric(x),quadsegs=35)
                     results <-intersect(BAMpts, srBuff)
