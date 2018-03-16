@@ -1,0 +1,41 @@
+---
+title: "Extract BAMpts using vector of incremental Buffer"
+author: "Melina Houle"
+date: "March 16, 2018"
+output: html_document
+---
+
+
+## R Markdown
+
+This script uses an ESRI shapefile study region and an ESRI shapefile of the BAM point dataset. It buffers the study region according to an incremental vector of buffer and intersects the BAM dataset with them. It then saves the results of the intersection inside an output working directory. List of SS points intersected are stored in csv files. 
+
+```{r Intersect BAM pts with a vector of incremental buffers}
+require(rgeos)
+require(rgdal)
+require(raster)
+
+
+# set wd where spatial data are
+wd<-"F:/MelinaStuff/request/FranciscoDenes/MooseCree"
+# Location of Avian BAM database (here I used a sample but it could be the whole)
+
+# Read SHAPEFILE.shp from the current working dir (".")
+BAMpts<-readOGR(dsn=wd, layer="BAM_Homelands_wBuff500")
+studyRegion<-readOGR(dsn=wd,layer="Homelands_Boundary_srid92001")
+#plot(studyRegion)
+
+# vector of incremental buffer, must follow unit of the proj4srting chosen. Here buffers are in meters
+incBuff<-c("0","50000","100000","150000","200000","250000","300000","350000","400000","450000","500000")
+
+lapply(incBuff, function(x) {
+                    srBuff <-gBuffer(studyRegion, width=as.numeric(x))
+                    results <-intersect(BAMpts, srBuff)
+                    outf <- paste0("BAM_pts_wBuff",x)
+                    write.table(results$SS, file.path(wd,"output",paste0(outf,".csv")), row.names=FALSE, col.names=c("SS"))
+                    writeOGR(results, file.path(wd,"output"), outf, driver="ESRI Shapefile")
+})
+
+
+```
+
