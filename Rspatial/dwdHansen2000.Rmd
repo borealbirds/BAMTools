@@ -1,0 +1,214 @@
+---
+title: "dwdHansen2000"
+author: "M. Houle"
+date: "March 8, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This script is to download Hansen Forest Cover Change.Results from time-series analysis of Landsat images in characterizing global forest extent and change from 2000 through 2016. For additional information about these results, please see the associated journal article (Hansen et al., Science 2013).
+
+This global dataset is divided into 10x10 degree tiles, consisting of seven files per tile. All files contain unsigned 8-bit values and have a spatial resolution of 1 arc-second per pixel, or approximately 30 meters per pixel at the equator.
+
+The script is for now only downloading Canada tiles. 
+```{r cars}
+
+## List of  files are found at:  
+#https://earthenginepartners.appspot.com/science-2013-global-forest/download_v1.4.html
+
+library(RCurl) #getURL
+library(downloader) # download
+library(tools) # file_path_sans_ext file_ext
+library(XML) # readHTMLTable
+library(dplyr)
+
+outDir <- "C:/MelinaStuff/Contracts/BAM/gisdata/Hansen"
+setwd(outDir)
+# Download .txt listing all available tiles per dataset.
+treelist <- "https://storage.googleapis.com/earthenginepartners-hansen/GFC-2016-v1.4/treecover2000.txt"
+gainlist <- "https://storage.googleapis.com/earthenginepartners-hansen/GFC-2016-v1.4gain.txt"
+lyrlist <-"https://storage.googleapis.com/earthenginepartners-hansen/GFC-2016-v1.4lossyear.txt"
+dmlist <- "https://storage.googleapis.com/earthenginepartners-hansen/GFC-2016-v1.4datamask.txt"
+f_list <- "https://storage.googleapis.com/earthenginepartners-hansen/GFC-2016-v1.4first.txt"
+l_list <- "https://storage.googleapis.com/earthenginepartners-hansen/GFC-2016-v1.4last.txt"
+
+# Create list of tiles to download based on variable of interest
+dwdlist <- c(treelist, gainlist, lyrlist, dmlist, f_list,l_list)
+
+# Create dir to save file containing the complete list of URLs for each layer
+listDir <- file.path(outDir, "link2dwd")
+dir.create(listDir, showWarnings = FALSE)
+
+lapply(dwdlist, function(x) download(x, file.path(listDir, basename(x)), mode="wb"))
+
+# read table
+treecover<-read.table(file.path(listDir,basename(treelist)), header = FALSE, stringsAsFactors = FALSE)
+gain<-read.table(file.path(listDir,basename(gainlist)), header = FALSE, stringsAsFactors = FALSE)
+maskdata<-read.table(file.path(listDir,basename(lyrlist)), header = FALSE, stringsAsFactors = FALSE)
+lossyr<-read.table(file.path(listDir,basename(dmlist)), header = FALSE, stringsAsFactors = FALSE)
+first<-read.table(file.path(listDir,basename(f_list)), header = FALSE, stringsAsFactors = FALSE)
+last<-read.table(file.path(listDir,basename(l_list)), header = FALSE, stringsAsFactors = FALSE)
+
+#-----------------
+#   Treecover
+# Read files
+treecoverDir <- file.path(outDir, "treecoverAmerica") 
+dir.create(treecoverDir, showWarnings = FALSE)
+
+## Delete from list all tiles not in Canada 
+treecover<- treecover$V1
+treecoverW <- treecover[grep("W.tif$", treecover)]
+treecoverNW <- treecoverW[grep("N_", treecoverW)]
+treecover_canada <- subset(treecoverNW,!(grepl("_00N_", treecoverNW)) & 
+               !(grepl("_10N_", treecoverNW)) & 
+               !(grepl("_20N_", treecoverNW)) & 
+               !(grepl("_30N_", treecoverNW)) &
+               !(grepl("_40N_", treecoverNW)) &
+               !(grepl("010W.tif$", treecoverNW)) &
+               !(grepl("020W.tif$", treecoverNW)) &
+               !(grepl("030W.tif$", treecoverNW)) &
+               !(grepl("040W.tif$", treecoverNW)) &
+               !(grepl("050W.tif$", treecoverNW)) &
+               !(grepl("160W.tif$", treecoverNW)) &
+               !(grepl("170W.tif$", treecoverNW)) &
+               !(grepl("180W.tif$", treecoverNW)))
+
+# Download
+lapply(treecover_canada, function(x) download(x, file.path(treecoverDir, basename(x)), mode="wb"))
+#-----------------
+
+#   Loss
+lossyrDir <-file.path(outDir, "lossAmerica")
+dir.create(lossyrDir, showWarnings = FALSE)
+
+## Delete from list all tiles not in Canada 
+lossyr<- lossyr$V1
+lossyrW <- lossyr[grep("W.tif$", lossyr)]
+lossyrNW <- lossyrW[grep("N_", lossyrW)]
+lossyr_canada <- subset(lossyrNW,!(grepl("_00N_", lossyrNW)) & 
+               !(grepl("_10N_", lossyrNW)) & 
+               !(grepl("_20N_", lossyrNW)) & 
+               !(grepl("_30N_", lossyrNW)) &
+               !(grepl("_40N_", lossyrNW)) &
+               !(grepl("010W.tif$", lossyrNW)) &
+               !(grepl("020W.tif$", lossyrNW)) &
+               !(grepl("030W.tif$", lossyrNW)) &
+               !(grepl("040W.tif$", lossyrNW)) &
+               !(grepl("050W.tif$", lossyrNW)) &
+               !(grepl("160W.tif$", lossyrNW)) &
+               !(grepl("170W.tif$", lossyrNW)) &
+               !(grepl("180W.tif$", lossyrNW)))
+
+# Download
+lapply(lossyr_canada, function(x) download(x, file.path(lossyrDir, basename(x)), mode="wb"))
+#-----------------
+
+#   Gain
+gainDir <-file.path(outDir, "gainAmerica")
+dir.create(gainDir, showWarnings = FALSE)
+
+## Delete from list all tiles not in Canada 
+gain<- gain$V1
+gainW <- gain[grep("W.tif$", gain)]
+gainNW <- gainW[grep("N_", gainW)]
+gain_canada <- subset(gainNW,!(grepl("_00N_", gainNW)) & 
+               !(grepl("_10N_", gainNW)) & 
+               !(grepl("_20N_", gainNW)) & 
+               !(grepl("_30N_", gainNW)) &
+               !(grepl("_40N_", gainNW)) &
+               !(grepl("010W.tif$", gainNW)) &
+               !(grepl("020W.tif$", gainNW)) &
+               !(grepl("030W.tif$", gainNW)) &
+               !(grepl("040W.tif$", gainNW)) &
+               !(grepl("050W.tif$", gainNW)) &
+               !(grepl("160W.tif$", gainNW)) &
+               !(grepl("170W.tif$", gainNW)) &
+               !(grepl("180W.tif$", gainNW)))
+
+# Download
+lapply(gain_canada, function(x) download(x, file.path(gainDir, basename(x)), mode="wb"))
+#-----------------
+
+#   Mask
+maskdataDir <-file.path(outDir, "maskAmerica")
+dir.create(maskdataDir, showWarnings = FALSE)
+
+## Delete from list all tiles not in Canada 
+maskdata<- maskdata$V1
+maskdataW <- maskdata[grep("W.tif$", maskdata)]
+maskdataNW <- maskdataW[grep("N_", maskdataW)]
+maskdata_canada <- subset(maskdataNW,!(grepl("_00N_", maskdataNW)) & 
+               !(grepl("_10N_", maskdataNW)) & 
+               !(grepl("_20N_", maskdataNW)) & 
+               !(grepl("_30N_", maskdataNW)) &
+               !(grepl("_40N_", maskdataNW)) &
+               !(grepl("010W.tif$", maskdataNW)) &
+               !(grepl("020W.tif$", maskdataNW)) &
+               !(grepl("030W.tif$", maskdataNW)) &
+               !(grepl("040W.tif$", maskdataNW)) &
+               !(grepl("050W.tif$", maskdataNW)) &
+               !(grepl("160W.tif$", maskdataNW)) &
+               !(grepl("170W.tif$", maskdataNW)) &
+               !(grepl("180W.tif$", maskdataNW)))
+
+# Download
+lapply(maskdata_canada, function(x) download(x, file.path(maskdataDir, basename(x)), mode="wb"))
+#-----------------
+
+#   First
+firstDir <-file.path(outDir, "firstAmerica")
+dir.create(firstDir, showWarnings = FALSE)
+
+## Delete from list all tiles in the East (Europe) 
+first<- first$V1
+firstW <- first[grep("W.tif$", first)]
+firstNW <- firstW[grep("N_", firstW)]
+first_canada <- subset(firstNW,!(grepl("_00N_", firstNW)) & 
+               !(grepl("_10N_", firstNW)) & 
+               !(grepl("_20N_", firstNW)) & 
+               !(grepl("_30N_", firstNW)) &
+               !(grepl("_40N_", firstNW)) &
+               !(grepl("010W.tif$", firstNW)) &
+               !(grepl("020W.tif$", firstNW)) &
+               !(grepl("030W.tif$", firstNW)) &
+               !(grepl("040W.tif$", firstNW)) &
+               !(grepl("050W.tif$", firstNW)) &
+               !(grepl("160W.tif$", firstNW)) &
+               !(grepl("170W.tif$", firstNW)) &
+               !(grepl("180W.tif$", firstNW)))
+
+# Download
+lapply(first_canada, function(x) download(x, file.path(firstDir, basename(x)), mode="wb"))
+#-----------------
+
+#   Last
+lastDir <-file.path(outDir, "lastAmerica")
+dir.create(lastDir, showWarnings = FALSE)
+
+## Delete from list all tiles in the East (Europe) 
+last<- last$V1
+lastW <- last[grep("W.tif$", last)]
+lastNW <- lastW[grep("N_", lastW)]
+last_canada <- subset(lastNW,!(grepl("_00N_", lastNW)) & 
+               !(grepl("_10N_", lastNW)) & 
+               !(grepl("_20N_", lastNW)) & 
+               !(grepl("_30N_", lastNW)) &
+               !(grepl("_40N_", lastNW)) &
+               !(grepl("010W.tif$", lastNW)) &
+               !(grepl("020W.tif$", lastNW)) &
+               !(grepl("030W.tif$", lastNW)) &
+               !(grepl("040W.tif$", lastNW)) &
+               !(grepl("050W.tif$", lastNW)) &
+               !(grepl("160W.tif$", lastNW)) &
+               !(grepl("170W.tif$", lastNW)) &
+               !(grepl("180W.tif$", lastNW)))
+
+# Download
+lapply(last_canada, function(x) download(x, file.path(lastDir, basename(x)), mode="wb"))
+#-----------------
+```
