@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## R Markdown
 
-This script uses a list of 89 bird species to batch download maps of density estimate found on the boreal birds website. The list of birds used should be check prior to make the script final. 
+This script uses a list of 89 bird species to batch download maps of density estimate (JPEG) found on the boreal birds website. The list of birds used should be check prior to make the script final. 
 
 A list of birds needs to be used since the server do not allow any traffic on the parent directory relative_density_estimates. Template of filenames (jpgObj) was found by manually downloading one file. If some jpeg do not used the same template or a bird is not found on the list, the JPEG won't be downloaded. To make sure all JPEG are download, make sure your list of birds is up to date or change permission on the parent directory on the Web Server. 
 
@@ -22,12 +22,14 @@ library(RCurl)
 #List birds table **** Note the list is incomplete. need to be review
 birdtbl <- "../data/birdAcronyme.csv"
 bird <- read.csv(birdtbl, sep="\t", header=TRUE)
-lsbird <- as.vector(bird[,1])
+lsbird2 <- as.vector(bird[,1])
+lsbird <- sapply(strsplit(lsbird2, ","), "[", 1)
 
 BAMwebsite <- "http://www.borealbirds.ca/files/results/relative_density_estimates"
 jpgObj <- "XXXX_Density_April30_2012.jpg"
-outpath <- "../../toLoad/RelativeDensity"
-  
+#outpath <- "../../toLoad/RelativeDensity"
+outpath <- "C:/MelinaStuff/temp/BAM"
+
 sapply(lsbird,function(x) {
           jpgObj_updated <- gsub("XXXX",x,jpgObj)
           toDwd <- file.path(BAMwebsite,jpgObj_updated)

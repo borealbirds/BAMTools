@@ -29,12 +29,16 @@ parentDir <-dirname(getwd())
 birdtbl <-file.path(parentDir,"data/birdAcronyme.csv")
 bird <- read.csv(birdtbl, sep=",", header=TRUE,stringsAsFactors=FALSE)
 
-gnDir <- file.path(parentDir,"GNmetadata/templateSpeciesDistribution/data/metadata")
-con <- file(paste0(gnDir,"/metadata.xml"))
+#gnDir <- file.path(parentDir,"GNmetadata/templateSpeciesDistribution/data/metadata")
+#con <- file(paste0(gnDir,"/metadata.xml"))
+gnDir <- file.path(parentDir,"GNmetadata/template_SpeciesDistribution.xml")
+con <- file(gnDir)
+
 gnVersion <-readLines(con, warn=FALSE)
 
 xml_update <- apply(bird,1,function(x) {
-                    dirTo <- "/home/ubuntu/geonetwork/toGN/metadata/SpeciesDistribution"
+                    dirTo <-"C:/MelinaStuff/Contracts/BAM/geonetwork/toGN/metadata/SpeciesDistribution"
+                    #dirTo <- "/home/ubuntu/geonetwork/toGN/metadata/SpeciesDistribution"
                     species_updated <-gsub("XXXX",x[2],gnVersion)
                     xsname_updated <-gsub("SSSS",x[3],species_updated)
                     abbrev_updated <-gsub("AAAA",x[1],xsname_updated)
