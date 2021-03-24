@@ -1,0 +1,51 @@
+Package: BBS2BAM
+Type: Package
+Title: Convert BBS to BAM standard 
+Description: A set of functions for translating BBS data into BAM format.
+Version: 0.0.1
+Date: 2020-02-14
+Authors@R: c(
+    person("Melina", "Houle", email = "houle.melina@gmail.com",
+    role = c("aut", "cre")),
+    person("Her Majesty the Queen in Right of Canada, as represented by the Minister of Natural Resources Canada",
+    role = "cph")
+    )
+Depends: R (>= 3.3.0),
+  digest,
+  magrittr,
+  utils,
+  tools,
+  RCurl,
+  tidyr,
+  readr,
+  chron,
+  data.table,
+  readxl
+Imports:
+  digest,
+  magrittr,
+  utils,
+  tools,
+  RCurl,
+  tidyr,
+  readr,
+  chron,
+  data.table,
+  readxl
+Suggests:
+  knitr,
+  rmarkdown,
+  testthat
+BugReports: none
+License: GPL-3
+ByteCompile: yes
+Encoding: UTF-8
+LazyData: true
+VignetteBuilder: knitr, rmarkdown
+Collate: 
+    'dwdBBS.R'
+    'bbs2pc_detection.R'
+    'bbs2pc_survey.R'
+    'bbs2pc_dataset.R'
+    'bbs2pc_location.R'
+RoxygenNote: 7.1.1
