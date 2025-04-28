@@ -1,1 +1,0 @@
-BBS2BAM package allows to download and translate BBS data (fifty stop files) into BAM format. The geographic locations provided in the download are at the route level. Please contact BAM organization to acquire the geographic location at the stop level in order to run the package. 
